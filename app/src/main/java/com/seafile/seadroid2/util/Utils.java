@@ -73,6 +73,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 
+import okhttp3.OkHttpClient;
+
 public class Utils {
     public static final String MIME_APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String AUTHORITY = "com.seafile.seadroid2";
@@ -283,7 +285,7 @@ public class Utils {
         if (i != null)
             return i;
 
-        String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
+        String mime = FileMimeUtils.getMimeTypeFromExtension(suffix);
         return getResIdforMimetype(mime);
     }
 
@@ -307,7 +309,7 @@ public class Utils {
         String suffix = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
         if (TextUtils.isEmpty(suffix))
             return false;
-        String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
+        String mime = FileMimeUtils.getMimeTypeFromExtension(suffix);
         if (mime == null)
             return false;
         return mime.contains("video/");

@@ -1,6 +1,7 @@
 package com.seafile.seadroid2.util;
 
 import android.media.MediaMetadataRetriever;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.HashMap;
@@ -43,11 +44,20 @@ public class FileMimeUtils {
         needUpdateFileMime.put(".pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12");
         needUpdateFileMime.put(".ppsm", "application/vnd.ms-powerpoint.slideshow.macroEnabled.12");
         needUpdateFileMime.put(".wps", "application/vnd.ms-works");
+        needUpdateFileMime.put(".flv","video/x-flv");
     }
 
 
     public static boolean isOfficeOrTextFile(String mime) {
         return needUpdateFileMime.containsValue(mime);
+    }
+
+    public static String getMimeTypeFromExtension(String extension){
+        String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if(mime == null) {
+            mime = needUpdateFileMime.get(String.format(".%s", extension));
+        }
+        return mime;
     }
 
     public static String getMimeType(File file) {

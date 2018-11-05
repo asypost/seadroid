@@ -110,8 +110,8 @@ android {
         testImplementation 'org.robolectric:robolectric:3.0'
         implementation 'com.madgag.spongycastle:core:1.54.0.0'
         implementation 'com.madgag.spongycastle:prov:1.54.0.0'
-        implementation 'com.shuyu:gsyVideoPlayer-java:2.1.0'
-        implementation 'com.shuyu:gsyVideoPlayer-ex_so:2.1.0'
+        implementation 'com.shuyu:gsyVideoPlayer-java:3.0.0'
+        implementation 'com.shuyu:gsyVideoPlayer-ex_so:3.0.0'
         implementation 'com.squareup.okhttp3:okhttp:3.9.1'
 
         implementation 'com.yydcdut:markdown-processor:0.1.3'

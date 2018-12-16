@@ -185,26 +185,35 @@ public class WidgetUtils {
 
         }
     }
+
+    public static void showFile(final BaseActivity activity, File file) {
+        showFile(activity, file, false);
+    }
+
     /**
      * display the file according to its file type
      *
      * @param file
      */
-    public static void showFile(final BaseActivity activity, File file) {
+    public static void showFile(final BaseActivity activity, File file, boolean isOpenWith) {
 
         String name = file.getName();
         String suffix = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
 
-        // Open markdown and txt files in MarkdownActivity
-        if ("md".equals(suffix) || "markdown".equals(suffix) || "txt".equals(suffix)) {
+        //Open markdown and txt files in MarkdownActivity
+        boolean isTextMime = Utils.isTextMimeType(name);
+        if (isTextMime && !isOpenWith) {
             startMarkdownActivity(activity, file.getPath());
             activity.overridePendingTransition(0, 0);
             return;
         }
 
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
-        if (mime==null)
-            mime = "*/*"; // forces app chooser dialog on unknown type
+        if (mime == null && isTextMime) {
+            mime = "text/*"; // set .md  .markdown .txt file type//
+        } else if (mime == null) {
+            mime = "*/*"; // forces app chooser dialog on unknown type//
+        }
         Intent open = new Intent(Intent.ACTION_VIEW);
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

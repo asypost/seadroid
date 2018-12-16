@@ -214,7 +214,10 @@ public class ReposFragment extends ListFragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case R.id.share:
-                        mActivity.showShareDialog(repoID, path, false, dirent.size,dirent.name);
+                        mActivity.showShareDialog(repoID, path, false, dirent.size, dirent.name);
+                        break;
+                    case R.id.open:
+                        mActivity.onFileSelected(dirent, true);
                         break;
                     case R.id.delete:
                         mActivity.deleteFile(repoID, repoName, path);
@@ -248,6 +251,10 @@ public class ReposFragment extends ListFragment {
             menu.findItem(R.id.rename).setVisible(false);
             menu.findItem(R.id.delete).setVisible(false);
             menu.findItem(R.id.move).setVisible(false);
+        }
+        if (!Utils.isTextMimeType(filename)) {
+            Menu menu = builder.build().getMenu();
+            menu.findItem(R.id.open).setVisible(false);
         }
         builder.show();
         SeafRepo repo = getDataManager().getCachedRepoByID(repoID);

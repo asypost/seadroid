@@ -335,19 +335,19 @@ public class Utils {
         ConnectivityManager connMgr = (ConnectivityManager)
                 SeadroidApplication.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if(wifi != null && wifi.isAvailable()
-                && wifi.getDetailedState() == DetailedState.CONNECTED) {
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return false;
+        }
+        if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+            String extraInfo = networkInfo.getExtraInfo();
+            if (!TextUtils.isEmpty(extraInfo)) {
+                return true;
+            }
+        }
+        if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
             return true;
         }
-
-        NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if(mobile != null && mobile.isAvailable()
-                && mobile.getDetailedState() == DetailedState.CONNECTED) {
-            return true;
-        }
-
         return false;
     }
 
@@ -735,6 +735,15 @@ public class Utils {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
+    public static boolean isTextMimeType(String fileName) {
+        String suffix = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        //file is markdown or  txt
+        if ("md".equals(suffix) || "markdown".equals(suffix) || "txt".equals(suffix)) {
+            return true;
+        }
+        return false;
+    }
+
     private static long lastClickTime;
 
     /**
@@ -851,4 +860,6 @@ public class Utils {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
+
+
 }

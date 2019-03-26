@@ -46,6 +46,7 @@ import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.SettingsManager;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountManager;
+import com.seafile.seadroid2.cameraupload.CameraUploadManager;
 import com.seafile.seadroid2.cameraupload.MediaObserverService;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.DatabaseHelper;
@@ -387,6 +388,7 @@ public class BrowserActivity extends BaseActivity
 
         requestReadExternalStoragePermission();
 
+        syncCamera();
     }
 
     public FrameLayout getContainer() {
@@ -2042,9 +2044,12 @@ public class BrowserActivity extends BaseActivity
         Intent intent = new Intent(this, SeafilePathChooserActivity.class);
         intent.putExtra(SeafilePathChooserActivity.DATA_ACCOUNT, account);
         SeafRepo repo = dataManager.getCachedRepoByID(repoID);
+        boolean isShowEncryptDir = false;
         if (repo.encrypted) {
+            isShowEncryptDir = true;
             intent.putExtra(SeafilePathChooserActivity.ENCRYPTED_REPO_ID, repoID);
         }
+        intent.putExtra(SeafilePathChooserActivity.SHOW_ENCRYPTED_REPOS, isShowEncryptDir);
         startActivityForResult(intent, CHOOSE_COPY_MOVE_DEST_REQUEST);
         return;
     }
@@ -2241,9 +2246,11 @@ public class BrowserActivity extends BaseActivity
         Intent intent = new Intent(this, SeafilePathChooserActivity.class);
         intent.putExtra(SeafilePathChooserActivity.DATA_ACCOUNT, account);
         SeafRepo repo = getDataManager().getCachedRepoByID(repoID);
+        boolean isShowEncryptDir = false;
         if (repo.encrypted) {
             intent.putExtra(SeafilePathChooserActivity.ENCRYPTED_REPO_ID, repoID);
         }
+        intent.putExtra(SeafilePathChooserActivity.SHOW_ENCRYPTED_REPOS, isShowEncryptDir);
         startActivityForResult(intent, BrowserActivity.CHOOSE_COPY_MOVE_DEST_REQUEST);
     }
 
@@ -2414,4 +2421,11 @@ public class BrowserActivity extends BaseActivity
         getReposFragment().showDirBottomSheet(title, dirent);
     }
 
+    private void syncCamera() {
+        SettingsManager settingsManager = SettingsManager.instance();
+        CameraUploadManager cameraManager = new CameraUploadManager(getApplicationContext());
+        if (cameraManager.isCameraUploadEnabled() && settingsManager.isVideosUploadAllowed()) {
+            cameraManager.performFullSync();
+        }
+    }
 }

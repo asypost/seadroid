@@ -22,6 +22,7 @@ import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.SeafDirent;
 import com.seafile.seadroid2.data.SeafRepo;
+import com.seafile.seadroid2.notification.UploadNotificationProvider;
 import com.seafile.seadroid2.transfer.TransferService;
 import com.seafile.seadroid2.transfer.TransferService.TransferBinder;
 import com.seafile.seadroid2.util.ConcurrentAsyncTask;
@@ -223,11 +224,20 @@ public class ShareToSeafileActivity extends BaseActivity {
                         mTxService.addTaskToUploadQueBlock(account, repoID, repoName, targetDir, path, update, false);
                     } else {
                         mTxService.addUploadTask(account, repoID, repoName,
-                                targetDir, path, update, false);
+                                targetDir, path, update, true);
                     }
                     Log.d(DEBUG_TAG, path + (update ? " updated" : " uploaded"));
                 }
                 showShortToast(ShareToSeafileActivity.this, R.string.upload_started);
+                if (mTxService == null)
+                    return;
+
+                if (!mTxService.hasUploadNotifProvider()) {
+                    UploadNotificationProvider provider = new UploadNotificationProvider(
+                            mTxService.getUploadTaskManager(),
+                            mTxService);
+                    mTxService.saveUploadNotifProvider(provider);
+                }
                 finish();
             }
 

@@ -104,8 +104,8 @@ public class MediaObserverService extends Service {
         getApplicationContext().getContentResolver().registerContentObserver(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, mediaObserver);
 
-        getApplicationContext().getContentResolver().registerContentObserver
-                (MediaStore.Video.Media.EXTERNAL_CONTENT_URI, false, mediaObserver);
+//        getApplicationContext().getContentResolver().registerContentObserver
+//                (MediaStore.Video.Media.EXTERNAL_CONTENT_URI, false, mediaObserver);
 
         // Log.i(DEBUG_TAG, "Started watchting for new media content.");
     }

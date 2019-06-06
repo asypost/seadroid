@@ -117,6 +117,9 @@
 
 -keep class com.seafile.seadroid2.**
 -keepclassmembers class com.seafile.seadroid2.** { *; }
+-keepclassmembers class com.seafile.seadroid2.** {
+  !transient <fields>;
+}
 -keepclassmembers class com.seafile.seadroid2.** { public <init>(...); }
 -keepclassmembers class * extends com.actionbarsherlock.ActionBarSherlock { public <init>(...); }
 
@@ -124,3 +127,7 @@
 -dontwarn tv.danmaku.ijk.**
 -keep class com.shuyu.gsyvideoplayer.** { *; }
 -dontwarn com.shuyu.gsyvideoplayer.**
+
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}

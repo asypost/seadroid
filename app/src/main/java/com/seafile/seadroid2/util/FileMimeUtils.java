@@ -16,6 +16,8 @@ public class FileMimeUtils {
 
     private static final HashMap<String, String> needUpdateFileMime = new HashMap<>();
 
+    private static final HashMap<String,String> otherKnownFileMime = new HashMap<>();
+
     static {
         //{fileType，    MIME}
         needUpdateFileMime.put(".doc", "application/msword");
@@ -44,7 +46,8 @@ public class FileMimeUtils {
         needUpdateFileMime.put(".pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12");
         needUpdateFileMime.put(".ppsm", "application/vnd.ms-powerpoint.slideshow.macroEnabled.12");
         needUpdateFileMime.put(".wps", "application/vnd.ms-works");
-        needUpdateFileMime.put(".flv","video/x-flv");
+
+        otherKnownFileMime.put(".flv","video/x-flv");
     }
 
 
@@ -56,6 +59,9 @@ public class FileMimeUtils {
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         if(mime == null) {
             mime = needUpdateFileMime.get(String.format(".%s", extension));
+        }
+        if(mime == null){
+            mime = otherKnownFileMime.get(String.format(".%s",extension));
         }
         return mime;
     }

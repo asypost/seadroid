@@ -652,7 +652,7 @@ public class Utils {
         if (name == null || email == null || server == null)
             return null;
 
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(email) || TextUtils.isEmpty(server))
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(server))
             return "";
 
         // strip port, like :8000 in 192.168.1.116:8000

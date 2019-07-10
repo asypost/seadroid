@@ -18,6 +18,7 @@ import com.seafile.seadroid2.account.AccountManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -359,12 +360,24 @@ public abstract class StorageManager implements MediaScannerConnection.OnScanCom
         return storageLocation;
     }
 
+    private void createNoMediaFile(File dir){
+       File noMediaFile = new File(dir,".nomedia");
+       if(!noMediaFile.exists()){
+           try {
+               noMediaFile.createNewFile();
+           } catch (IOException e) {
+               Log.i(DEBUG_TAG,"Failed create no media file");
+           }
+       }
+    }
+
     private File getDirectoryCreateIfNeeded(File dir) {
         if (dir.exists()) {
             return dir;
         } else {
             dir.mkdirs();
         }
+        createNoMediaFile(dir);
         return dir;
     }
 

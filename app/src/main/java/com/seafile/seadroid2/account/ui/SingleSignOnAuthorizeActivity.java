@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,11 +24,17 @@ import android.widget.LinearLayout;
 
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
+import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
+import com.seafile.seadroid2.account.AccountInfo;
+import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.ssl.CertsManager;
 import com.seafile.seadroid2.ui.activity.BaseActivity;
 import com.seafile.seadroid2.ui.dialog.SslConfirmDialog;
+import com.seafile.seadroid2.util.ConcurrentAsyncTask;
 import com.seafile.seadroid2.util.Utils;
+
+import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -174,7 +181,7 @@ public class SingleSignOnAuthorizeActivity extends BaseActivity implements Toolb
         @Override
         public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
             Log.d(DEBUG_TAG, "onReceivedSslError " + error.getCertificate().toString());
-            final Account account = new Account(null, serverUrl, null, null, false);
+            final Account account = new Account(serverUrl, null, null, null, false);
             SslCertificate sslCert = error.getCertificate();
             X509Certificate savedCert = CertsManager.instance().getCertificate(account);
 
@@ -218,31 +225,14 @@ public class SingleSignOnAuthorizeActivity extends BaseActivity implements Toolb
             Account account = null;
             try {
                 account = parseAccount(Utils.cleanServerURL(serverUrl), cookie);
+                if (account == null) {
+                    return;
+                }
+                ConcurrentAsyncTask.execute(new SingleSignOnAuthorizeActivity.AccountInfoTask(account, account.getToken()));
             } catch (MalformedURLException e) {
                 Log.e(DEBUG_TAG, e.getMessage());
             }
-            returnAccount(account);
         }
-    }
-
-    private void returnAccount(Account account) {
-        if (account == null) {
-            return;
-        }
-
-        Intent retData = new Intent();
-        retData.putExtras(getIntent());
-        retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_NAME, account.getSignature());
-        retData.putExtra(android.accounts.AccountManager.KEY_AUTHTOKEN, account.getToken());
-        retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_TYPE, getIntent().getStringExtra(SeafileAuthenticatorActivity.ARG_ACCOUNT_TYPE));
-        retData.putExtra(SeafileAuthenticatorActivity.ARG_EMAIL, account.getEmail());
-        retData.putExtra(SeafileAuthenticatorActivity.ARG_NAME, account.getName());
-        retData.putExtra(SeafileAuthenticatorActivity.ARG_SHIB, account.isShib());
-        retData.putExtra(SeafileAuthenticatorActivity.ARG_SERVER_URI, account.getServer());
-
-        // pass auth result back to the SingleSignOnActivity
-        setResult(RESULT_OK, retData);
-        finish();
     }
 
     /**
@@ -266,8 +256,87 @@ public class SingleSignOnAuthorizeActivity extends BaseActivity implements Toolb
 
         Log.d(DEBUG_TAG, "email: " + email);
         Log.d(DEBUG_TAG, "token: " + token);
+        return new Account(url, email, "", token, true);
+    }
 
-        return new Account(null, url, email, token, true);
+    private class AccountInfoTask extends AsyncTask<Void, Void, String> {
+        Account loginAccount;
+        String authToken;
+        SeafException err = null;
+
+        public AccountInfoTask(Account loginAccount, String authToken) {
+            this.loginAccount = loginAccount;
+            this.authToken = authToken;
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return getinfo();
+        }
+
+        @Override
+        protected void onPostExecute(final String result) {
+            if (err == SeafException.sslException) {
+                SslConfirmDialog dialog = new SslConfirmDialog(loginAccount,
+                        new SslConfirmDialog.Listener() {
+                            @Override
+                            public void onAccepted(boolean rememberChoice) {
+                                CertsManager.instance().saveCertForAccount(loginAccount, rememberChoice);
+                                ConcurrentAsyncTask.execute(new SingleSignOnAuthorizeActivity.AccountInfoTask(loginAccount, authToken));
+                            }
+
+                            @Override
+                            public void onRejected() {
+
+                            }
+                        });
+                dialog.show(getSupportFragmentManager(), SslConfirmDialog.FRAGMENT_TAG);
+            }
+            if (result != null && result.equals("Success")) {
+                returnAccount(loginAccount);
+            }
+        }
+
+        private void returnAccount(Account account) {
+            Intent retData = new Intent();
+            retData.putExtras(getIntent());
+            retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_NAME, account.getSignature());
+            retData.putExtra(android.accounts.AccountManager.KEY_AUTHTOKEN, account.getToken());
+            retData.putExtra(android.accounts.AccountManager.KEY_ACCOUNT_TYPE, getIntent().getStringExtra(SeafileAuthenticatorActivity.ARG_ACCOUNT_TYPE));
+            retData.putExtra(SeafileAuthenticatorActivity.ARG_EMAIL, account.getEmail());
+            retData.putExtra(SeafileAuthenticatorActivity.ARG_NAME, account.getName());
+            retData.putExtra(SeafileAuthenticatorActivity.ARG_SHIB, account.is_shib);
+            retData.putExtra(SeafileAuthenticatorActivity.ARG_SERVER_URI, account.getServer());
+            setResult(RESULT_OK, retData);
+            finish();
+        }
+
+        private String getinfo() {
+            try {
+                DataManager manager = new DataManager(loginAccount);
+                AccountInfo accountInfo = manager.getAccountInfo();
+                if (accountInfo == null)
+                    return "Unknown error";
+                loginAccount = new Account(accountInfo.getName(),loginAccount.server, accountInfo.getEmail(), loginAccount.token, loginAccount.is_shib, loginAccount.sessionKey);
+                return "Success";
+
+            } catch (SeafException e) {
+                err = e;
+                if (e == SeafException.sslException) {
+                    return getString(R.string.ssl_error);
+                } else {
+                    showShortToast(SingleSignOnAuthorizeActivity.this, e.getMessage());
+                    return e.getMessage();
+                }
+            } catch (JSONException e) {
+                showShortToast(SingleSignOnAuthorizeActivity.this, e.getMessage());
+                return e.getMessage();
+            }
+        }
     }
 
     @SuppressLint("LongLogTag")

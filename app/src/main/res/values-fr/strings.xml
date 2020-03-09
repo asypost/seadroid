@@ -10,6 +10,12 @@
   <string name="delete_successful">Supprimé avec succès</string>
   <string name="delete_repo_title">Supprimer une bibliothèque</string>
   <string name="delete_file_f">Effacer le fichier</string>
+  <string name="recover_library">Récupérer la bibliothèque</string>
+  <string name="recover_file">Récupérer le fichier</string>
+  <string name="move_file">Déplacer le fichier</string>
+  <string name="update_file">Mettre à jour le fichier</string>
+  <string name="recover_folder">Récupérer le dossier</string>
+  <string name="move_folder">Déplacer le dossier</string>
   <string name="delete_dir">Effacer le dossier</string>
   <string name="name_hint">Nom</string>
   <string name="server_hint">Serveur, par exemple cloud.seafile.com</string>
@@ -42,7 +48,6 @@
   </string-array>
   <string name="choose_server">Choisir un serveur Seafile</string>
   <string-array name="choose_server_array">
-    <item>SeaCloud.cc</item>
     <item>Authentification unique</item>
     <item>Autre serveur Seafile</item>
   </string-array>
@@ -79,6 +84,7 @@
   <string name="file_action_share_link">Partager le lien</string>
   <string name="file_action_share_encrypt">Lien partagé avec mot de passe</string>
   <string name="file_action_export">Exporter</string>
+  <string name="file_action_open">Ouvrir avec</string>
   <string name="file_action_delete">Effacer</string>
   <string name="file_action_rename">Renommer</string>
   <string name="file_action_copy">Copier</string>
@@ -131,6 +137,11 @@
   <string name="load_dir_fail">Échec du chargement du contenu de ce dossier</string>
   <string name="not_supported_share">Ce type de partage n\'est pas supporté</string>
   <string name="edit">Modifier</string>
+  <string name="create_draft">Créer un brouillon</string>
+  <string name="rename_draft">Renommer le brouillon</string>
+  <string name="del_draft">Supprimer le brouillon</string>
+  <string name="update_draft">Mettre à jour le brouillon</string>
+  <string name="release_draft">Publication du brouillon</string>
   <string name="encrypt">Crypter</string>
   <string name="download_folder">Télécharger le dossier</string>
   <string name="download_folder_title">Choisissez votre option préférée</string>
@@ -155,6 +166,7 @@
   <string name="create_new_folder_success">Le dossier %s a été créé avec succès</string>
   <string name="create_new_file_success">Le fichier %s a été créé avec succès</string>
   <string name="create_new_file">Créer un nouveau fichier</string>
+  <string name="create_files">Créer des fichiers</string>
   <string name="create_new_dir">Créer un nouveau dossier</string>
   <string name="camera">Prendre une photo</string>
   <string name="download">Télécharger</string>
@@ -304,18 +316,6 @@
   <string name="settings_contacts_upload_repo_history">Aucune sauvegarde enregistrée</string>
   <string name="settings_contacts_upload_start_backup">Sauvegarde</string>
   <string name="settings_contacts_upload_start_backup_hint">Cliquez pour commencer la sauvegarde des contacts</string>
-  <string name="settings_contacts_upload_start_recovery">Restaurer</string>
-  <string name="settings_contacts_upload_start_recovery_hint">Cliquez pour restaurer les contacts</string>
-  <!--contacts Upload Perference-->
-  <string name="contacts_dialog_recovery">Restaurer les contacts depuis la dernière sauvegarde</string>
-  <string name="contacts_dialog_backup">Les contacts seront sauvegardés dans le fichier :</string>
-  <string name="contacts_count_zero">Les contacts sont vides</string>
-  <string name="contacts_backup_success">Sauvegardé avec succès</string>
-  <string name="contacts_recovery_success">Restauré avec succès</string>
-  <string name="contacts_backup_title">Sauvegarder les contacts</string>
-  <string name="contacts_recovery_title">Restaurer les contacts</string>
-  <string name="contacts_backup_fail">Échec de la sauvegarde</string>
-  <string name="contacts_recover_fail">Échec de la restauration</string>
   <!--Camera Upload Preference-->
   <string name="settings_camera_upload_info_title">Envoi des photos</string>
   <string name="settings_camera_upload_service_started">Service d\'envoi démarré</string>
@@ -527,4 +527,16 @@ E-mail : support@seafile.com<br>
   <string name="add_auto_expiration">Ajouter une expiration automatique</string>
   <string name="input_auto_expiration">SVP entrez les dates d\'expiration</string>
   <!--editor-->
+  <string name="editor_lines_error">Activer afin d\'opérer sur plusieurs lignes</string>
+  <string name="editor_file_save">Voulez-vous sauvegarder et quitter ?</string>
+  <string name="editor_file_save_success">Fichier sauvegardé avec succès</string>
+  <string name="editor_file_save_failed">Échec de l\'effacement du cache</string>
+  <string name="editor_file_save_title">Sauvegarde de fichier</string>
+  <string name="description">Description</string>
+  <string name="undo">annuler</string>
+  <string name="redo">rétablir</string>
+  <string name="link">Lien</string>
+  <string name="channel_name_error">Alertes d\'erreur</string>
+  <string name="channel_name_upload">Information d\'envoi de fichier</string>
+  <string name="channel_name_download">Information téléchargement de fichier</string>
 </resources>

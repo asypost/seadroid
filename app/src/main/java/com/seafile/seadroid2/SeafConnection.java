@@ -295,12 +295,21 @@ public class SeafConnection {
         }
     }
 
-    public String getEvents(int start) throws SeafException {
+    public String getEvents(int start, boolean useNewActivity) throws SeafException {
+        String apiPath;
         try {
-            String apiPath = String.format("api2/events/");
-
             Map<String, Object> params = Maps.newHashMap();
-            params.put("start", start);
+            if (useNewActivity) {
+                apiPath = String.format("api/v2.1/activities/");
+                if (start == 0) {
+                    start = 1;
+                }
+                params.put("page", start);
+            } else {
+                apiPath = String.format("api2/events/");
+                params.put("start", start);
+            }
+
             HttpRequest req = prepareApiGetRequest(apiPath, params);
             checkRequestResponseStatus(req, HttpURLConnection.HTTP_OK);
 
@@ -767,13 +776,13 @@ public class SeafConnection {
         return false;
     }
 
-    private String getUploadLink(String repoID, boolean update) throws SeafException {
+    private String getUploadLink(String repoID, boolean update, String dir) throws SeafException {
         try {
             String apiPath;
             if (update) {
                 apiPath = "api2/repos/" + repoID + "/update-link/";
             } else {
-                apiPath = "api2/repos/" + repoID + "/upload-link/";
+                apiPath = "api2/repos/" + repoID + "/upload-link/?p=" + Utils.toURLEncoded(dir);
             }
             HttpRequest req;
             req = prepareApiGetRequest(apiPath);
@@ -870,7 +879,7 @@ public class SeafConnection {
      */
     public String uploadFile(String repoID, String dir, String filePath, ProgressMonitor monitor, boolean update)
             throws SeafException, IOException {
-            String url = getUploadLink(repoID, update);
+            String url = getUploadLink(repoID, update, dir);
             return uploadFileCommon(url, repoID, dir, filePath, monitor, update);
     }
 

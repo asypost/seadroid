@@ -362,7 +362,7 @@ public class SeafItemAdapter extends BaseAdapter {
         }
         boolean cacheExists = false;
 
-        if (file.exists()) {
+        if (file.exists() && file.length() == dirent.getFileSize()) {
             SeafCachedFile cf = dataManager.getCachedFile(repoName, repoID, filePath);
             String subtitle = null;
             subtitle = dirent.getSubtitle();
@@ -435,6 +435,8 @@ public class SeafItemAdapter extends BaseAdapter {
             if (url == null) {
                 viewHolder.icon.setImageResource(dirent.getIcon());
             } else {
+                ImageLoader.getInstance().clearMemoryCache();
+                ImageLoader.getInstance().clearDiskCache();
                 ImageLoader.getInstance().displayImage(url, viewHolder.icon, options, animateFirstListener);
             }
         } else {
